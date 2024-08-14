@@ -19,7 +19,7 @@ extern wxBitmap *_img_instrument;
 extern wxBitmap *_img_minus;
 extern wxBitmap *_img_plus;
 
-#ifdef PLUGIN_USE_SVG
+#ifdef ocpnUSE_SVG
 extern wxString _svg_tactics;
 extern wxString _svg_tactics_rollover;
 extern wxString _svg_tactics_toggled;

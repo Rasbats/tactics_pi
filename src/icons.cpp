@@ -13,7 +13,7 @@ wxBitmap *_img_instrument;
 wxBitmap *_img_minus;
 wxBitmap *_img_plus;
 
-#ifdef PLUGIN_USE_SVG
+#ifdef ocpnUSE_SVG
 #include "ocpn_plugin.h"
 wxString _svg_tactics_pi;
 wxString _svg_tactics;
@@ -23,7 +23,7 @@ wxString _svg_dial;
 wxString _svg_instrument;
 wxString _svg_minus;
 wxString _svg_plus;
-#endif //  PLUGIN_USE_SVG
+#endif //  ocpnUSE_SVG
 
 void initialize_images(void)
 {
@@ -52,7 +52,7 @@ void initialize_images(void)
 		_img_plus = new wxBitmap(wxImage(sm));
 	}
 	
-#ifdef PLUGIN_USE_SVG
+#ifdef ocpnUSE_SVG
     wxFileName fn;
     fn.SetPath(GetPluginDataDir("tactics_pi"));
     fn.AppendDir(_T("data"));
@@ -63,6 +63,6 @@ void initialize_images(void)
     _svg_tactics_rollover = fn.GetFullPath();
     fn.SetFullName(_T("tactics_pi_toggled.svg"));
     _svg_tactics_toggled = fn.GetFullPath();
-#endif //  PLUGIN_USE_SVG					   
+#endif //  ocpnUSE_SVG				   
 	return;
 }
