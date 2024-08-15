@@ -35,7 +35,7 @@
 #endif //precompiled headers
 
 
-#include "version.h"
+#include "config.h"
 
 #include <wx/notebook.h>
 #include <wx/fileconf.h>
@@ -138,13 +138,13 @@ public:
       int GetPlugInVersionMinor();
       int GetPlugInVersionPatch();
       int GetPlugInVersionPost();
-	  
+
       wxBitmap *GetPlugInBitmap();
       wxString GetCommonName();
       wxString GetShortDescription();
       wxString GetLongDescription();
-	  // from shipdriver to read listing panel bitmap png
-	  wxBitmap m_panelBitmap; 
+      // from shipdriver to read listing panel bitmap png
+      wxBitmap m_panelBitmap;
 
 //    The optional method overrides
       void SetNMEASentence(wxString &sentence);
@@ -162,22 +162,22 @@ public:
       int GetToolbarItemId(){ return m_toolbar_item_id; }
       int GetTacticsWindowShownCount();
       void SetPluginMessage(wxString &message_id, wxString &message_body);
-	  //TR
-	  void CalculateCurrent(int st, double value, wxString unit);
-	  void CalculateLeeway(int st, double value, wxString unit);
-	  void CalculateTrueWind(int st, double value, wxString unit);
-	  void CalculateLaylineDegreeRange(void);
+      //TR
+      void CalculateCurrent(int st, double value, wxString unit);
+      void CalculateLeeway(int st, double value, wxString unit);
+      void CalculateTrueWind(int st, double value, wxString unit);
+      void CalculateLaylineDegreeRange(void);
       void CalculatePerformanceData(void);
       void CalculatePredictedCourse(void);
       void ExportPerformanceData(void);
       wxString ComputeChecksum(wxString sentence);
       void SendNMEASentence(wxString sentence);
       void createPNKEP_NMEA(int sentence, double data1, double data2, double data3, double data4);
-	  void SetCalcVariables(int st, double value, wxString unit);
-	  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-	  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
-	  void DoRenderLaylineGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
-	  void DoRenderCurrentGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      void SetCalcVariables(int st, double value, wxString unit);
+      bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
+      bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      void DoRenderLaylineGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+      void DoRenderCurrentGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
       void DrawWindBarb(wxPoint pp, PlugIn_ViewPort *vp);
       void DrawPolar(PlugIn_ViewPort *vp, wxPoint pp, double PolarAngle );
       //void DrawTargetAngle(PlugIn_ViewPort *vp, wxPoint pp, double PolarAngle, double TargetAngle, wxString color, double rad);
@@ -216,7 +216,7 @@ private:
       double               mVar;
       // FFU
       double               mSatsInView;
-	  double               mHdm;
+      double               mHdm;
       wxDateTime           mUTCDateTime;
       int                  m_config_version;
       wxString             m_VDO_accumulator;
@@ -229,22 +229,22 @@ private:
       int                  mTWS_Watchdog;
       int                  mAWS_Watchdog;
 
-	  // TR : bearing compass + TWA/TWD calculation
-	  wxMenu               *m_pmenu;
-	  double               mHdt, mStW, mSOG, mCOG, mlat, mlon, mheel,msensorheel, mLeeway;
+      // TR : bearing compass + TWA/TWD calculation
+      wxMenu               *m_pmenu;
+      double               mHdt, mStW, mSOG, mCOG, mlat, mlon, mheel,msensorheel, mLeeway;
       double               m_calcTWS, m_calcTWA, m_calcTWD; //temp testing for Windbarb display
-	  wxString             mHeelUnit, mAWAUnit, mAWSUnit;
-	  double               mAWA, mAWS, mTWA, mTWD, mTWS;
+      wxString             mHeelUnit, mAWAUnit, mAWSUnit;
+      double               mAWA, mAWS, mTWA, mTWD, mTWS;
       bool                 m_bTrueWind_available, m_bLaylinesIsVisible, m_bDisplayCurrentOnChart, m_bShowWindbarbOnChart, m_bShowPolarOnChart;
-	  bool                 m_LeewayOK;
+      bool                 m_LeewayOK;
       bool                 m_bNKE_TrueWindTableBug;
       double               m_VWR_AWA;
-	  double               alpha_currspd, alpha_CogHdt;
-	  double               m_ExpSmoothCurrSpd, m_ExpSmoothCurrDir,m_ExpSmoothSog;
-	  double               m_ExpSmoothSinCurrDir, m_ExpSmoothCosCurrDir;
-	  double               m_tempSmoothedLaylineCOG;
-	  double			   m_ExpSmoothDiffCogHdt;
-	  double               m_LaylineDegRange, m_COGRange[COGRANGE], m_ExpSmoothDegRange, m_alphaDeltaCog;
+      double               alpha_currspd, alpha_CogHdt;
+      double               m_ExpSmoothCurrSpd, m_ExpSmoothCurrDir,m_ExpSmoothSog;
+      double               m_ExpSmoothSinCurrDir, m_ExpSmoothCosCurrDir;
+      double               m_tempSmoothedLaylineCOG;
+      double               m_ExpSmoothDiffCogHdt;
+      double               m_LaylineDegRange, m_COGRange[COGRANGE], m_ExpSmoothDegRange, m_alphaDeltaCog;
       //double exp.smoothing of predicted Cog for boat laylines
       double               m_LaylineSmoothedCog, m_ExpSmoothSinCog, m_ExpSmoothCosCog; //foreward boat layline
       double               m_SmoothedpredCog, m_ExpSmoothSinpredCog, m_ExpSmoothCospredCog; //other tack boat layline
@@ -254,14 +254,14 @@ private:
       double               mPolarTargetSpeed, mPredictedHdG, mPredictedCoG, mPredictedSoG, mPercentTargetVMGupwind, mPercentTargetVMGdownwind, mPercentUserTargetSpeed;
       TargetxMG tvmg,tcmg;
       double               mVMGGain, mCMGGain, mVMGoptAngle, mCMGoptAngle,mBRG;
-	  wxDC            *m_pdc;
-	  wxPoint         vpoints[3],tackpoints[3];
-	  double          m_CurrentDirection;
+      wxDC            *m_pdc;
+      wxPoint         vpoints[3],tackpoints[3];
+      double          m_CurrentDirection;
 
-	  DoubleExpSmooth *mSinCurrDir;
-	  DoubleExpSmooth *mCosCurrDir;
-	  ExpSmooth       *mExpSmoothCurrSpd;
-	  DoubleExpSmooth *mExpSmoothSog;
+      DoubleExpSmooth *mSinCurrDir;
+      DoubleExpSmooth *mCosCurrDir;
+      ExpSmooth       *mExpSmoothCurrSpd;
+      DoubleExpSmooth *mExpSmoothSog;
       DoubleExpSmooth       *mExpSmSinCog;
       DoubleExpSmooth       *mExpSmCosCog;
       //double exp.smoothing of predicted Cog for boat laylines
@@ -273,8 +273,8 @@ private:
       DoubleExpSmooth       *mExpSmSintarget_tacklinedir;
       DoubleExpSmooth       *mExpSmCostarget_tacklinedir;
 
-	  ExpSmooth       *mExpSmDegRange;
-	  ExpSmooth       *mExpSmDiffCogHdt;
+      ExpSmooth       *mExpSmDegRange;
+      ExpSmooth       *mExpSmDiffCogHdt;
 
       iirfilter            mSOGFilter;
       iirfilter            mCOGFilter;
@@ -302,12 +302,12 @@ public:
       void OnInstrumentUp(wxCommandEvent& event);
       void OnInstrumentDown(wxCommandEvent& event);
       void OnPrefScroll(wxCommandEvent& event);
-	  void SelectPolarFile(wxCommandEvent& event);
+      void SelectPolarFile(wxCommandEvent& event);
       void OnAWSAWACorrectionUpdated(wxCommandEvent& event);
       void OnManualHeelUpdate(wxCommandEvent& event);
       void OnAlphaCurrDirSliderUpdated(wxCommandEvent& event);
       void ApplyPrefs(wxCommandEvent& event);
-	  void SaveTacticsConfig();
+      void SaveTacticsConfig();
 
       wxArrayOfTactics            m_Config;
       wxFontPickerCtrl             *m_pFontPickerTitle;
@@ -325,15 +325,15 @@ public:
       wxSpinCtrlDouble             *m_alphaDeltCoG; //TR
       wxSpinCtrlDouble             *m_alphaLaylineDampFactor;//TR
       wxSpinCtrl                   *m_minLayLineWidth;//TR
-	  wxSpinCtrl                   *m_maxLayLineWidth;//TR
+      wxSpinCtrl                   *m_maxLayLineWidth;//TR
       wxSpinCtrlDouble             *m_LeewayFactor;//TR
       wxSpinCtrl           *m_AlphaCurrDir; //TR
       wxSpinCtrlDouble             *m_fixedLeeway;//TR
       //wxSlider                     *m_AlphaCurrDir; //TR
-	  wxButton                     *m_buttonLoadPolar;//TR
+      wxButton                     *m_buttonLoadPolar;//TR
       wxButton                     *m_buttonPrefsApply;//TR
        //wxButton                     *m_buttonPrefOK;//TR
-	  wxTextCtrl                   *m_pTextCtrlPolar; //TR
+      wxTextCtrl                   *m_pTextCtrlPolar; //TR
       wxSpinCtrlDouble             *m_pLaylineLength; //TR
       wxSpinCtrlDouble             *m_heel5_45;
       wxSpinCtrlDouble             *m_heel5_90;
@@ -350,12 +350,12 @@ public:
       wxSpinCtrlDouble             *m_heel25_45;
       wxSpinCtrlDouble             *m_heel25_90;
       wxSpinCtrlDouble             *m_heel25_135;
-	  wxTextCtrl                   *m_UseHeelSensor;
-	  wxCheckBox                   *m_CurrentOnChart;
-	  wxRadioButton                *m_ButtonLeewayFactor;
-	  wxRadioButton                *m_ButtonFixedLeeway;
-	  wxRadioButton                *m_ButtonHeelInput;
-	  wxRadioButton                *m_ButtonUseHeelSensor;
+      wxTextCtrl                   *m_UseHeelSensor;
+      wxCheckBox                   *m_CurrentOnChart;
+      wxRadioButton                *m_ButtonLeewayFactor;
+      wxRadioButton                *m_ButtonFixedLeeway;
+      wxRadioButton                *m_ButtonHeelInput;
+      wxRadioButton                *m_ButtonUseHeelSensor;
       wxCheckBox                   *m_CorrectSTWwithLeeway;
       wxCheckBox                   *m_CorrectAWwithHeel;
       wxCheckBox                   *m_ForceTrueWindCalculation;
@@ -414,7 +414,7 @@ enum
       ID_DASH_PREFS = 999,
       ID_DASH_VERTICAL,
       ID_DASH_HORIZONTAL,
-	  ID_DASH_LAYLINE,
+      ID_DASH_LAYLINE,
       ID_DASH_CURRENT,
       ID_DASH_POLAR,
       ID_DASH_WINDBARB,

@@ -1,277 +1,124 @@
-##---------------------------------------------------------------------------
-## Author:      Dave Register
-## ***************************************************************************
-## *   Copyright (C) 2010 by David S. Register                               *
-## *   License:     GPLv3+
-## *   This program is free software; you can redistribute it and/or modify  *
-## *   it under the terms of the GNU General Public License as published by  *
-## *   the Free Software Foundation; either version 2 of the License, or     *
-## *   (at your option) any later version.                                   *
-## *                                                                         *
-## *   This program is distributed in the hope that it will be useful,       *
-## *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-## *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-## *   GNU General Public License for more details.                          *
-## *                                                                         *
-## *   You should have received a copy of the GNU General Public License     *
-## *   along with this program; if not, write to the                         *
-## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,                                       *
-## *   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                       *
-#-----------------------------------------------------------------------------
-# Frontend2 Author: Jon Gough 
-# Testplugin(TP) v1.0.286.2 24/12/2023 DD/MM/YYYY format
-# buildCI:yes useODAPI:no validateJSON:no
-# ---------------------------------------------------------------------------
-## -- When changing this file do NOT change the order of the sections.    -- ##
-## -- Make changes only between the section blocks identified             -- ##
-## -- The whole configuration process relies on this sequence for success.-- ##
-##
-## -- Modify section below to include all the details for your plugin.    -- ##
+# ~~~
+# Summary:      Main plugin build script
+# Copyright (c) 2020-2021 Mike Rossiter
+# License:      GPLv3+
+# ~~~
 
-set(CMLOC "CMakeLists: ")
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
 
-# define minimum cmake version
-cmake_minimum_required(VERSION 3.5.1)
-if(COMMAND cmake_policy)
-    if(POLICY CMP0043)
-        cmake_policy(SET CMP0043 NEW)
-    endif(POLICY CMP0043)
-    cmake_policy(SET CMP0048 NEW)
-# Need cmake 3.13 to implement this, but raspbian builds are at 3.7.2 and bionic at 3.10 and xenial builds at 3.5.1
-#    cmake_policy(SET CMP0076 NEW)
-    if(POLICY CMP0077)
-        cmake_policy(SET CMP0077 NEW)
-    endif(POLICY CMP0077)
-endif(COMMAND cmake_policy)
+# -------- Cmake setup ---------
+#
+cmake_minimum_required(VERSION 3.12.0)
+include(${CMAKE_SOURCE_DIR}/cmake/CmakeSetup.cmake NO_POLICY_SCOPE)
+message(STATUS "Cmake version: ${CMAKE_VERSION}.")
 
-# define plugin name, owner and versions
-set(VERBOSE_NAME "Tactics")
-set(COMMON_NAME "Tactics")
-set(TITLE_NAME "TACTICS")
-set(PACKAGE_CONTACT "Tom R")
-set(PACKAGE "tactics_pi")
-set(SHORT_DESCRIPTION "Tactics PlugIn for OpenCPN")
-set(LONG_DESCRIPTION "Tactics PlugIn for OpenCPN Provides performance data and instrument display from NMEA source and polar file.")
 
-set(VERSION_MAJOR "1")
-set(VERSION_MINOR "0")
-set(VERSION_PATCH "82")
-set(VERSION_TWEAK "0")
-set(VERSION_DATE  "30/12/2023")#DD/MM/YYYY format
-set(OCPN_MIN_VERSION "ov58")
+# -------- Build setup  --------
+#
+include(PluginOptions)
+if (BUILD_TYPE)
+  message(STATUS "Building: ${BUILD_TYPE}")
+else ()
+  message(STATUS "Configuring")
+endif ()
 
-set(OCPN_API_VERSION_MAJOR "1")
-set(OCPN_API_VERSION_MINOR "17")
-set(TP_COMMENT "  * Release using CI")
+# -------- Plugin setup ----------
+#
+include(Plugin.cmake)
 
-set(PARENT "opencpn")
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# -------- Setup completed, build the plugin --------
+#
+project(${PKG_NAME} VERSION ${PKG_VERSION})
+include(PluginCompiler)
 
-#Use to set up a local webserver with git installed.
-#Default is github.com. Now set in pluginconfigure.cmake
-#set(GIT_REPOSITORY_SERVER "github.com")
+add_library(${CMAKE_PROJECT_NAME} SHARED EXCLUDE_FROM_ALL ${SRC})
+include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)
 
-## Specifies Cloudsmith upload repository suffix for each catalog
-set(PROD "prod")   #Standard Repos
-set(BETA "beta")   #Standard Repos
-set(ALPHA "alpha") #Standard Repos
+add_subdirectory("opencpn-libs/${PKG_API_LIB}")
+target_link_libraries(${CMAKE_PROJECT_NAME} ocpn::api)
 
-# Set if  Cloudsmith Base Repository name does not match your Git Repository name.
-#set(CLOUDSMITH_BASE_REPOSITORY "${GIT_REPOSITORY_NAME}")
-#set(CLOUDSMITH_BASE_REPOSITORY "opencpn-plugins")  #Ricks's customization
-set(CLOUDSMITH_BASE_REPOSITORY "tactics") #without the pi
+set(VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(VERSION_PATCH ${PROJECT_VERSION_PATCH})
+if (PROJECT_VERSION_TWEAK STREQUAL "")
+  set(PROJECT_VERSION_TWEAK 0)
+endif ()
 
-# Set the following to use OpenCPN cloudsmith repositories instead of own repositories
-set(CLOUDSMITH_USER "opencpn")
-# set(CLOUDSMITH_USER "rick-gleason")
 
-set(XML_INFO_URL "https://opencpn.org/OpenCPN/plugins/tactics.html")
-set(XML_SUMMARY ${SHORT_DESCRIPTION})
-set(XML_DESCRIPTION ${LONG_DESCRIPTION})
+set(PACKAGE_NAME ${CMAKE_PROJECT_NAME})
 
-## ----- Modify section above to include all the details for your plugin ------- ##
-## ----- Modify section below if there are special requirements for the plugin --##
+# Create the minimim ocpn version id string like ov50
+string(REGEX REPLACE "\([0-9]\)\.\([0-9]\).*" "ov\\1\\2"
+       OCPN_MIN_VERSION ${API_OCPN_MIN_VERSION})
 
-option(PLUGIN_USE_SVG "Use SVG graphics" ON)
+if (COMMAND late_init)
+  late_init()
+endif ()
 
-set(CMAKE_CXX_STANDARD 11)
+# Configure the flatpak manifest
+file(
+  GLOB manifest ${PROJECT_SOURCE_DIR}/flatpak/org.opencpn.OpenCPN.Plugin.*.yaml
+)
+include(ConfigureManifest)
+configure_manifest(${manifest} _new_manifest)
 
-set(OpenGL_GL_PREFERENCE "LEGACY")   #not operational
-option(USE_GL "Enable OpenGL support" ON)
-message(STATUS "${CMLOC}USE_GL: ${USE_GL}")
+# Set up targets. Targets sets up new targets with BUILD_TYPE set to
+# 'flatpak', 'android' or 'tarball'. The initial call without BUILD_TYPE ends
+# here.
+#
+include(Targets)
+create_targets(${_new_manifest})
 
-if("${CMAKE_BUILD_TYPE}" STREQUAL "")
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
-endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "" "Debug" "Release" "RelWithDebInfo" "MinSizeRel")
-message(STATUS "${CMLOC}Build type: ${CMAKE_BUILD_TYPE}")
+if ("${BUILD_TYPE}" STREQUAL "")
+  return ()
+endif ()
 
-## ----- Statements below used to setup standard variables required by the CMAKE process -- Do not remove - ##
+ 
+if (NOT ${BUILD_TYPE} STREQUAL "flatpak")
+  # Build package as required (flatpak already dealt with).
+  #
+  if (APPLE)
+    include(MacosWxwidgets)
+  endif ()
+  include(PluginInstall)
+  if (QT_ANDROID)
+    include(AndroidLibs)
+  else ()
+    include(PluginLibs)
+  endif ()
+  include(PluginLocalization)
 
-project(${PACKAGE})
+  include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)
+ 
+  if (COMMAND add_plugin_libraries)
+    add_plugin_libraries()
+  endif ()
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+endif ()
 
-##========================================================
-
-include("PluginSetup")
-
-##========================================================
-## ----- Above sets up standard variables required by CMAKE - Do not remove -----##
-## ----- Modify section below if there are special requirements for the plugin --##
-
-set(CMAKE_VERBOSE_MAKEFILE "Activate verbose mode for make files" ON)
-
-option(Plugin_CXX11 "Use c++11" OFF)
-
-## ----- Modify section above if there are special requirements for the plugin --##
-## ----- Do not change next section - needed to configure build process ---------##
-##===========================================================
-
-include("PluginConfigure")
-
-##===========================================================
-## ----- Do not change section above - needed to configure build process --------##
-## ----- Change below to match project requirements for source, headers, etc. ---##
-
-add_definitions(-DUSE_S57)
-
-## ---- Section Below - Add your project SET(SRCS and SET(HDRS  etc..
-
-SET(SRCS
-    src/tactics_pi.h
-    src/tactics_pi.cpp
-	src/avg_wind.h
-	src/avg_wind.cpp
-    src/bearingcompass.cpp
-    src/bearingcompass.h
-	src/polarcompass.cpp
-    src/polarcompass.h
-    src/performance.cpp
-    src/performance.h
-    src/instrument.cpp
-    src/instrument.h
-    src/iirfilter.h
-    src/iirfilter.cpp
-    src/compass.cpp
-    src/compass.h
-    src/dial.cpp
-    src/dial.h
-    src/gps.cpp
-    src/gps.h
-    src/rudder_angle.cpp
-    src/rudder_angle.h
-    src/speedometer.cpp
-    src/speedometer.h
-    src/wind.cpp
-    src/wind.h
-    src/depth.cpp
-    src/depth.h
-    src/clock.cpp
-    src/clock.h
-    src/icons.cpp
-    src/icons.h
-    src/wind_history.cpp
-    src/wind_history.h
-    src/baro_history.cpp
-    src/baro_history.h
-    src/from_ownship.cpp
-    src/from_ownship.h
+configure_file(
+  ${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/include/config.h
+  @ONLY
 )
 
+configure_file(
+  # The cloudsmith upload script
+  ${CMAKE_SOURCE_DIR}/ci/upload.sh.in ${CMAKE_BINARY_DIR}/upload.sh
+  @ONLY
+)
+configure_file(
+  # The cloudsmith upload script, windows bat file.
+  ${CMAKE_SOURCE_DIR}/ci/upload.bat.in ${CMAKE_BINARY_DIR}/upload.bat
+  @ONLY
+)
 
-add_definitions(-DPLUGIN_USE_SVG)
-
-## ----- Section above - Add your project SET(SRCS and SET(HDRS  etc.-------##
-## ----- If using JSON validation in plugin section below is needed --------##
-
-# Do not need Json Schema Validation
-
-## ----- If using JSON validation in plugin section above is needed --------##
-
-
-##=============================================================
-## Change as required to collect all the set( headers and SRCS
-## This add_library  can be used in conditionals below.
-##=============================================================
-
-SET(SRC ${SRCS} ${HDRS} )
-
-##=============================================================
-## Modify/configure 'Include' Directories below for the Plugin
-##=============================================================
-
-
-
-
-## Change target_sources to match your project needs.
-##==============================================================
-
-target_sources(${PACKAGE_NAME} PUBLIC ${SRC} )
-
-##==============================================================
-
-if(NOT OCPN_FLATPAK_CONFIG)
-    # Build environment not available when flatpak is being configured 
-	# so following statements will not work
-    message(STATUS "${CMLOC}Adding target link libraries to ${PACKAGE_NAME}")
-
-    if (WIN32)
-        add_subdirectory(opencpn-libs/WindowsHeaders)
-        target_link_libraries(${PACKAGE_NAME} windows::headers)
-    endif (WIN32)
-
-    add_subdirectory(opencpn-libs/api-17)
-    target_link_libraries(${PACKAGE_NAME} ocpn::api)
-
-    add_subdirectory(opencpn-libs/tinyxml)
-    target_link_libraries(${PACKAGE_NAME} ocpn::tinyxml)
-
-    add_subdirectory(opencpn-libs/wxJSON)
-    target_link_libraries(${PACKAGE_NAME} ocpn::wxjson)
-
-    add_subdirectory(opencpn-libs/plugin_dc)
-    target_link_libraries(${PACKAGE_NAME} ocpn::plugin-dc)
-
-    add_subdirectory(opencpn-libs/nmea0183)
-    target_link_libraries(${PACKAGE_NAME} ocpn::nmea0183)
-
-#  Tactics has been converted to use opencpn-libs/nmea0183
-#  This is original Dashboard_Tactics nmea0183 version
-#  Keep this private version around for awhile as it may be useful.
-#    add_subdirectory(libs/nmea0183dtactics)
-#    target_link_libraries(${PACKAGE_NAME} ocpn::nmea0183dtactics)
-
-endif(NOT OCPN_FLATPAK_CONFIG)
-
-add_definitions(-DTIXML_USE_STL)
-
-##
-## ----- If using JSON validation section below is needed ---------------##
-##
-
-# Do not need Json Schema Validation
-
-
-##------- Change below to match project requirements --------------------##
-
-# Needed for android builds
-if(QT_ANDROID)
-    include_directories(BEFORE ${qt_android_include})
-endif(QT_ANDROID)
-
-## Needed for all builds Do not change - needed to build app -------------##
-##===============================================================
-
-include("PluginInstall")
-include("PluginLocalization")
-include("PluginPackage")
-
-##================================================================
-## ----- Do not change section above - needed to configure build process --##
-
-message(STATUS "${CMLOC}include directories: ")
-get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
-foreach(dir ${dirs})
-    message(STATUS "${CMLOC}dir='${dir}'")
-endforeach()
+set(checksum "@checksum@")
+configure_file(
+  # The XML metadata file
+  ${CMAKE_SOURCE_DIR}/plugin.xml.in
+  ${CMAKE_BINARY_DIR}/${pkg_displayname}.xml.in
+  @ONLY
+)
