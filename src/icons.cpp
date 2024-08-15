@@ -63,6 +63,6 @@ void initialize_images(void)
     _svg_tactics_rollover = fn.GetFullPath();
     fn.SetFullName(_T("tactics_pi_toggled.svg"));
     _svg_tactics_toggled = fn.GetFullPath();
-#endif //  ocpnUSE_SVG				   
+#endif //  ocpnUSE_SVG					   
 	return;
 }

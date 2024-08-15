@@ -611,9 +611,9 @@ int tactics_pi::Init(void)
 
     wxString shareLocn = GetPluginDataDir("tactics_pi") +  _T("/data/");
 
-    wxString normalIcon = shareLocn + _T("tactics_pi.svg");
-    wxString toggledIcon = shareLocn + _T("tactics_pi_toggled.svg");
-    wxString rolloverIcon = shareLocn + _T("tactics_pi_rollover.svg");
+    wxString normalIcon = shareLocn + _T("tactics.svg");
+    wxString toggledIcon = shareLocn + _T("tactics_toggled.svg");
+    wxString rolloverIcon = shareLocn + _T("tactics_rollover.svg");
 
     //  For journeyman styles, we prefer the built-in raster icons which match the rest of the toolbar.
     /* if (GetActiveStyleName().Lower() != _T("traditional")){
@@ -765,14 +765,16 @@ void tactics_pi::Notify()
     ExportPerformanceData();
 
 }
-int tactics_pi::GetAPIVersionMajor() { return atoi(API_VERSION); }
-
-int tactics_pi::GetAPIVersionMinor() {
-  std::string v(API_VERSION);
-  size_t dotpos = v.find('.');
-  return atoi(v.substr(dotpos + 1).c_str());
+//*********************************************************************************
+int tactics_pi::GetAPIVersionMajor()
+{
+    return API_VERSION_MAJOR;
 }
-
+//*********************************************************************************
+int tactics_pi::GetAPIVersionMinor()
+{
+    return API_VERSION_MINOR;
+}
 //*********************************************************************************
 int tactics_pi::GetPlugInVersionMajor()
 {
@@ -817,16 +819,15 @@ wxString tactics_pi::GetCommonNameVersion()
   return retstr;
 }
 
-wxString tactics_pi::GetCommonName() { return PLUGIN_API_NAME; }
-wxString tactics_pi::GetShortDescription() { return PKG_SUMMARY; }
-wxString tactics_pi::GetLongDescription() { return PKG_DESCRIPTION; }
 
-
+wxString tactics_pi::GetCommonName()
+{
+    return PLUGIN_API_NAME;
 
 /*  wxString retstr(s_common_name);
   return retstr; */
 
-
+}
 
 /*
 wxString tactics_pi::GetCommonName()
@@ -839,9 +840,17 @@ wxString tactics_pi::GetCommonName()
   return common_name_version;
 }*/
 //*********************************************************************************
+wxString tactics_pi::GetShortDescription()
+{
+    return PKG_SUMMARY;
 
+}
 //*********************************************************************************
+wxString tactics_pi::GetLongDescription()
+{
+    return PKG_DESCRIPTION;
 
+}
 //*********************************************************************************
 void tactics_pi::SendSentenceToAllInstruments(int st, double value, wxString unit)
 {
