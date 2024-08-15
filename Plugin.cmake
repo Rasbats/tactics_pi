@@ -22,15 +22,14 @@ set(OCPN_TEST_REPO
 # -------  Plugin setup --------
 #
 set(PKG_NAME tactics_pi)
-set(PKG_VERSION  3.3.3)
+set(PKG_VERSION  3.4.0)
 set(PKG_PRERELEASE "")  # Empty, or a tag like 'beta'
 
 set(DISPLAY_NAME tactics)    # Dialogs, installer artifacts, ...
 set(PLUGIN_API_NAME tactics) # As of GetCommonName() in plugin API
-set(PKG_SUMMARY "Simulate ship movements")
+set(PKG_SUMMARY "Show laylines")
 set(PKG_DESCRIPTION [=[
-Simulates how a sailing vessel might react in
-those conditions.
+Draws laylines for optimum progress esp. upwind.
 ]=])
 
 set(PKG_AUTHOR "Mike Rossiter")
